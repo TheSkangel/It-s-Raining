@@ -25,7 +25,7 @@ public class ModeSelection : MonoBehaviour {
 	}
 	
 	void Update () {
-
+        
         float xAxis = Input.GetAxisRaw("p1Horizontal");
 
         if(Time.time > scrollTimer) {
@@ -53,7 +53,7 @@ public class ModeSelection : MonoBehaviour {
         if(GameController.state == "gameover") {
 
             if (Input.GetButtonDown("p1Jump")) {
-
+                
                 SelectGameOverOption();
 
             }
@@ -65,11 +65,14 @@ public class ModeSelection : MonoBehaviour {
 	}
 
     void MoveSelection(int direction) {
-
+        
         currentIndex += direction;
-
+        
         if (currentIndex > selections.Length - 1)
             currentIndex = 0;
+
+        if (currentIndex < 0)
+            currentIndex = selections.Length - 1;
 
         selectionBox.position = selections[currentIndex].position;
 
@@ -94,16 +97,24 @@ public class ModeSelection : MonoBehaviour {
     }
 
     void SelectGameOverOption() {
-
+        
         if (currentIndex == 0) {
+
+            menuNav.StartGame();
 
             level.RestartGame();
 
         } else {
 
+            GameController.state = "menu";
+
             menuNav.GoToScreen("Main Menu");
 
+            level.DestroyPlayers();
+
         }
+
+        currentIndex = 0;
 
     }
 

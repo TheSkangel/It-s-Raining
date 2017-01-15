@@ -9,6 +9,7 @@ namespace Game
 	[Serializable]
 	public class PlayerController : MonoBehaviour
 	{
+
 		public float gravity = -1f; //
 		public float runSpeed = 8f;
 		public float groundDamping = 20f; // how fast do we change direction? higher means faster
@@ -31,7 +32,10 @@ namespace Game
 		public string rButton = "Run_P1"; //Input for boost axis
 		public string jButton = "Jump_P1"; //input for jump axis
 
-		public bool isGrounded; 
+		public bool isGrounded;
+
+        private Level _level;
+        public DeathEffect _deathEffect;
 
 		//		public List<GameObject> _players;
 
@@ -41,6 +45,9 @@ namespace Game
 			//get components
 			_animator = GetComponentInChildren<Animator>();
 			_controller = GetComponent<CharacterController2D>();
+            _deathEffect = GetComponent<DeathEffect>();
+
+            _level = GameObject.FindGameObjectWithTag("Level").GetComponent<Level>();
 			//			_players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
 
 
@@ -55,12 +62,12 @@ namespace Game
 
 		void onControllerCollider( RaycastHit2D hit )
 		{
-			//		// bail out on plain old ground hits cause they arent very interesting
-			//			if( hit.normal.y == 1f )
-			//				return;
+            //		// bail out on plain old ground hits cause they arent very interesting
+            //			if( hit.normal.y == 1f )
+            //				return;
 
-			//check to see if you've landed on someones head
-			if (_controller.collisionState.below &&
+            //check to see if you've landed on someones head
+            if (_controller.collisionState.below &&
 				!_controller.collisionState.right &&
 				!_controller.collisionState.left &&
 				hit.collider.gameObject.tag == "Player") 
@@ -91,6 +98,9 @@ namespace Game
 
 		void FixedUpdate ()
 		{
+
+            if (GameController.state != "playing")
+                return;
 
 			{
 				isGrounded = _controller.isGrounded;
@@ -181,27 +191,40 @@ namespace Game
 
 		public void killPlayer (GameObject deadPlayer)
 		{
-			Debug.Log (this.name + "killed" + deadPlayer);
-		}
-		void Start ()
-		{
+
+            deadPlayer.GetComponent<PlayerController>()._deathEffect.AnimateDeath();
+
+            Destroy(deadPlayer);
+
+            GameController.playersAlive--;
+            
+            EndGameCheck();
 
 		}
 
-		void OnEnable ()
-		{
+        void EndGameCheck() {
 
-		}
+            if(GameController.playersAlive <= 1) {
 
-		void OnDisable ()
-		{
+                GameOver();
 
-		}
+            }
 
-		void OnDestroy ()
-		{
+        }
 
-		}
+        void GameOver() {
+
+            Invoke("ShowGameOverMenu", 1f);
+
+        }
+
+        void ShowGameOverMenu() {
+
+            _level.ShowGameOverMenu();
+
+        }
+
 	}
+
 }
 
