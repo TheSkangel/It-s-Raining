@@ -6,6 +6,7 @@ public class MenuNavigation : MonoBehaviour {
     public GameObject menuContainer;
     public GameObject[] menuScreens;
     public GameObject[] modes;
+
     public void CloseAll(GameObject[] arrayToClose)
     {
         for (int i = 0; i < arrayToClose.Length; i++)
@@ -33,15 +34,20 @@ public class MenuNavigation : MonoBehaviour {
     }
     public void OpenMenu()
     {
+
         if (!menuContainer.activeSelf)
             menuContainer.SetActive(true);
+
     }
     public void CloseMenu()
     {
         menuContainer.SetActive(false);
     }
-    public void StartGame(string mode)
+    public void StartGame()
     {
+
+        GameController.state = "playing";
+
         CloseMenu();
 
     }
