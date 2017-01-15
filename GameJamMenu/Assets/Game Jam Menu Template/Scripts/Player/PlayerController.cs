@@ -229,6 +229,8 @@ namespace Game
 
             deadPlayer.GetComponent<PlayerController>()._deathEffect.AnimateDeath();
 
+            CameraShake2D.instance.ShakeCamera(0.1f, 1f, 1f);
+
             Destroy(deadPlayer);
 
             GameController.playersAlive--;
