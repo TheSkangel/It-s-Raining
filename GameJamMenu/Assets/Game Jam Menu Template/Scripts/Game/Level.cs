@@ -7,6 +7,8 @@ public class Level : MonoBehaviour {
     public MenuNavigation menuNav;
     public GameObject[] players;
 
+    public WallController wallController;
+
     void Update() {
         
         if (GameController.state != "playing")
@@ -40,6 +42,8 @@ public class Level : MonoBehaviour {
 
         SpawnPlayers(GameController.numberOfPlayers);
 
+        ResetValues();
+
         GameController.state = "playing";
 
     }
@@ -53,6 +57,12 @@ public class Level : MonoBehaviour {
             Destroy(players[i]);
 
         }
+
+    }
+
+    void ResetValues() {
+
+        wallController.ResetWalls();
 
     }
 
