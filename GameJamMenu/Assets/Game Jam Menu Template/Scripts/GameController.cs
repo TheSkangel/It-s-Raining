@@ -8,6 +8,7 @@ public class GameController : MonoBehaviour {
     public static string state = "menu";
 
     public static int numberOfPlayers;
+    public static int playersAlive;
 
     public MenuNavigation menuNav;
     public Level level;
@@ -22,6 +23,8 @@ public class GameController : MonoBehaviour {
     public static void SetNumberOfPlayers(int nb) {
 
         numberOfPlayers = nb;
+
+        playersAlive = nb;
 
     }
 

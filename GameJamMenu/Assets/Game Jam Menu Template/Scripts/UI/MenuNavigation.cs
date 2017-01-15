@@ -20,8 +20,9 @@ public class MenuNavigation : MonoBehaviour {
     public void GoToScreen(string screenName)
     {
         OpenMenu();
-        //GameController.state = "menu";
+
         CloseAll(menuScreens);
+
         for (int i = 0; i < menuScreens.Length; i++)
         {
             if (menuScreens[i].name == screenName)
@@ -48,7 +49,7 @@ public class MenuNavigation : MonoBehaviour {
 
         GameController.state = "playing";
 
-        CloseMenu();
+        CloseAll(menuScreens);
 
     }
     public int ModeToInt(string mode)

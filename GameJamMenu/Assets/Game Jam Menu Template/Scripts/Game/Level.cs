@@ -7,6 +7,21 @@ public class Level : MonoBehaviour {
     public MenuNavigation menuNav;
     public GameObject[] players;
 
+    void Update() {
+        
+        if (GameController.state != "playing")
+            return;
+
+    }
+
+    public void ShowGameOverMenu() {
+
+        GameController.state = "gameover";
+
+        menuNav.GoToScreen("Game Over");
+
+    }
+
     public void SpawnPlayers(int nb) {
 
         for(int i = 0; i < nb; i++) {
@@ -15,22 +30,24 @@ public class Level : MonoBehaviour {
 
         }
 
+        GameController.playersAlive = nb;
+
     }
 
     public void RestartGame() {
-
+        
         DestroyPlayers();
-
-        GameController.state = "playing";
 
         SpawnPlayers(GameController.numberOfPlayers);
 
+        GameController.state = "playing";
+
     }
 
-    void DestroyPlayers() {
-
+    public void DestroyPlayers() {
+        
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-
+        
         for(int i = 0; i < players.Length; i++) {
 
             Destroy(players[i]);
