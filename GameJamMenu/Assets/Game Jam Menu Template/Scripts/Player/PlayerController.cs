@@ -15,8 +15,15 @@ namespace Game
 		public float groundDamping = 20f; // how fast do we change direction? higher means faster
 		public float inAirDamping = 5f;
 		public float jumpHeight = 3f;
+
+		public float superJumpMultiplier = 2;
+
 		public float fastfallSpeed = 1f;
+
+		public bool canHover = true;
 		public float hoverSpeed = 0.5f;
+		public float maxHoverTime = 10f;
+		private float timeHovering = 0;
 
 		[HideInInspector]
 		private float normalizedHorizontalSpeed = 0;
@@ -36,6 +43,8 @@ namespace Game
 
         private Level _level;
         public DeathEffect _deathEffect;
+
+		public string powerupState;
 
 		//		public List<GameObject> _players;
 
@@ -76,6 +85,13 @@ namespace Game
 			{
 				killPlayer (hit.collider.gameObject);
 			}
+
+			if (hit.collider.isTrigger && hit.collider.gameObject.tag == "Pickup") 
+				
+			{
+				powerUp ();
+			}
+
 			//		// logs any collider hits if uncommented. it gets noisy so it is commented out for the demo
 			//		Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
 		}
@@ -110,8 +126,12 @@ namespace Game
 				float j = Input.GetAxisRaw (jButton);	// jump Input
 				float r = Input.GetAxisRaw (rButton);	// run input
 
-				if( _controller.isGrounded )
+				if (_controller.isGrounded) {
 					_velocity.y = 0;
+					canHover = true; timeHovering = 0; //reset values for hover fnctn
+				}
+
+
 
 				if( h>0 /*KeyCode.RightArrow*/ )
 				{
@@ -144,10 +164,25 @@ namespace Game
 					_velocity.y -= fastfallSpeed;
 				}
 
-				//stall 
-				if (!_controller.isGrounded && r > 0) {
-					_velocity.y = 0;
+				//hover controlls
+				if (!_controller.isGrounded && r > 0 && canHover) {
+
+					_velocity.y = 0; // hover
+
+
+					timeHovering += Time.deltaTime; //count how long we've been hovering
+
+					//if we've been hovering too long
+					if (timeHovering > maxHoverTime) {
+						canHover = false;
+					}
+				
+
+
 				}
+
+
+			
 
 
 
@@ -174,11 +209,11 @@ namespace Game
 				// apply gravity before moving
 				_velocity.y += gravity * Time.deltaTime;
 
-				// if holding down bump up our movement amount and turn off one way platform detection for a frame.
-				// this lets us jump down through one way platforms
+				// 
+				// super jump when holding down
 				if( _controller.isGrounded &&  v<0  )
 				{
-					_velocity.y *= 3f;
+					_velocity.y *= superJumpMultiplier;
 					_controller.ignoreOneWayPlatformsThisFrame = true;
 				}
 
@@ -200,6 +235,10 @@ namespace Game
             
             EndGameCheck();
 
+		}
+
+		public void powerUp (){
+			
 		}
 
         void EndGameCheck() {
