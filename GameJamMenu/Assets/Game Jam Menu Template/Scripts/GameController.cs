@@ -5,7 +5,12 @@ public class GameController : MonoBehaviour {
 
     GameController instance;
 
-    public static string state = "playing";
+    public static string state = "menu";
+
+    public static int numberOfPlayers;
+
+    public MenuNavigation menuNav;
+    public Level level;
 
     void Start () {
 
@@ -13,5 +18,11 @@ public class GameController : MonoBehaviour {
             instance = this;
 
 	}
+
+    public static void SetNumberOfPlayers(int nb) {
+
+        numberOfPlayers = nb;
+
+    }
 
 }
