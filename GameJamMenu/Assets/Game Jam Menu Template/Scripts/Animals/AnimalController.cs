@@ -34,6 +34,8 @@ public class AnimalController : MonoBehaviour {
         //set new velocity
         _velocity = _controller.velocity;
 
+
+
     }
 
 }

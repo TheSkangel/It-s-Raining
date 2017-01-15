@@ -14,6 +14,8 @@ namespace Game
 		public float groundDamping = 20f; // how fast do we change direction? higher means faster
 		public float inAirDamping = 5f;
 		public float jumpHeight = 3f;
+		public float fastfallSpeed = 1f;
+		public float hoverSpeed = 0.5f;
 
 		[HideInInspector]
 		private float normalizedHorizontalSpeed = 0;
@@ -29,6 +31,9 @@ namespace Game
 		public string rButton = "Run_P1"; //Input for boost axis
 		public string jButton = "Jump_P1"; //input for jump axis
 
+		public bool isGrounded; 
+
+//		public List<GameObject> _players;
 
 		void Awake ()
 		{
@@ -36,6 +41,9 @@ namespace Game
 			//get components
 			_animator = GetComponentInChildren<Animator>();
 			_controller = GetComponent<CharacterController2D>();
+//			_players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
+
+
 
 			// listen to some events for illustration purposes
 			_controller.onControllerCollidedEvent += onControllerCollider;
@@ -47,16 +55,29 @@ namespace Game
 
 	void onControllerCollider( RaycastHit2D hit )
 		{
-		// bail out on plain old ground hits cause they arent very interesting
-			if( hit.normal.y == 1f )
-				return;
+//		// bail out on plain old ground hits cause they arent very interesting
+//			if( hit.normal.y == 1f )
+//				return;
 
-		// logs any collider hits if uncommented. it gets noisy so it is commented out for the demo
-		Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
+			//check to see if you've landed on someones head
+			if (_controller.collisionState.below &&
+				!_controller.collisionState.right &&
+				!_controller.collisionState.left &&
+				hit.collider.gameObject.tag == "Player") 
+			
+
+			{
+				killPlayer (hit.collider.gameObject);
+			}
+//		// logs any collider hits if uncommented. it gets noisy so it is commented out for the demo
+//		Debug.Log( "flags: " + _controller.collisionState + ", hit.normal: " + hit.normal );
 		}
 
 	void onTriggerEnterEvent( Collider2D col )
 		{
+
+
+
 			Debug.Log( "onTriggerEnterEvent: " + col.gameObject.name );
 		}
 
@@ -70,13 +91,15 @@ namespace Game
 		
 		void FixedUpdate ()
 		{
+
 			{
+				isGrounded = _controller.isGrounded;
+			
 			float v = Input.GetAxisRaw (vButton);	//vertical downwards movement
 			float h = Input.GetAxisRaw (hButton);   //horizontal movement
 			float j = Input.GetAxisRaw (jButton);	// jump Input
 			float r = Input.GetAxisRaw (rButton);	// run input
-
-			
+						
 				if( _controller.isGrounded )
 					_velocity.y = 0;
 
@@ -105,6 +128,18 @@ namespace Game
 					_animator.Play( Animator.StringToHash( "Idle" ) );
 				}
 
+				//vertical movement in the air
+
+				if (!_controller.isGrounded && v<0) {
+					_velocity.y -= fastfallSpeed;
+				}
+
+				//stall 
+				if (!_controller.isGrounded && r > 0) {
+					_velocity.y = 0;
+				}
+				
+
 
 				// we can only jump whilst grounded
 				if( _controller.isGrounded && j>0)
@@ -118,6 +153,8 @@ namespace Game
 				{
 					_animator.Play( Animator.StringToHash( "Fall" ) );
 				}
+
+			
 
 
 				// apply horizontal speed smoothing it. dont really do this with Lerp. Use SmoothDamp or something that provides more control
@@ -142,22 +179,15 @@ namespace Game
 			}
 		}	
 
-		public void Death ()
+		public void killPlayer (GameObject deadPlayer)
 		{
-			this.enabled = false;
-			Debug.Log("you did it");
+			Debug.Log (this.name + "killed" + deadPlayer);
 		}
 		void Start ()
 		{
 			
 		}
-
-		
-		IEnumerator Wait(int i) 
-	 	{
-        		yield return new WaitForSeconds(i);
-				Debug.Log("yup");
-		}
+			
 		void OnEnable ()
 		{
 			
