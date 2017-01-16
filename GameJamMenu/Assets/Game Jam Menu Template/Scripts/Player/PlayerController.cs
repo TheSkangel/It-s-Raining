@@ -35,6 +35,7 @@ namespace Game
 		public string hButton = "Horizontal_P1"; //input for horziontal axis
 		public string vButton = "Vertical_P1"; //input for vertical axis
 
+        public AudioClip[] _audioClips;
 
 		public string rButton = "Run_P1"; //Input for boost axis
 		public string jButton = "Jump_P1"; //input for jump axis
@@ -58,8 +59,6 @@ namespace Game
 
             _level = GameObject.FindGameObjectWithTag("Level").GetComponent<Level>();
 			//			_players = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
-
-
 
 			// listen to some events for illustration purposes
 			_controller.onControllerCollidedEvent += onControllerCollider;
@@ -191,6 +190,9 @@ namespace Game
 				{
 					_velocity.y = Mathf.Sqrt( 2f * jumpHeight * -gravity );
 					_animator.Play( Animator.StringToHash( "Jump" ) );
+
+                    SFXManager.instance.PlaySound("Jump");
+
 				}
 
 				// check if player is falling
@@ -228,6 +230,8 @@ namespace Game
 		{
 
             deadPlayer.GetComponent<PlayerController>()._deathEffect.AnimateDeath();
+
+            SFXManager.instance.PlaySound("Death");
 
             CameraShake2D.instance.ShakeCamera(0.1f, 1f, 1f);
 
